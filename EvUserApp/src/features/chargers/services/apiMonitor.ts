@@ -1,4 +1,4 @@
-import { post } from './api';
+import { post } from '../../../services/api/api';
 
 export interface MonitorRequest {
   chargerId: string;

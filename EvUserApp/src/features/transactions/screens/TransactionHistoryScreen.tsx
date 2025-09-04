@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../theme';
-import { getTransactionHistory, Transaction } from '../services/api/apiTransactions';
-import type { RootStackParamList } from '../app/navigation/RootNavigator';
+import { useTheme } from '../../../theme';
+import { getTransactionHistory, Transaction } from '../services/apiTransactions';
+import type { RootStackParamList } from '../../../app/navigation/RootNavigator';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

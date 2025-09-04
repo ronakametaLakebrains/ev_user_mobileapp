@@ -11,6 +11,7 @@ import { createAsyncStoragePersister } from './services/query/persist';
 import { QueryDevtoolsLite } from './services/query/DevtoolsLite';
 import { Loader } from './components';
 import { initializeAuthToken } from './services/api/api';
+import { AuthProvider } from './services/auth/AuthContext';
 
 function AppInner() {
   const { isDark } = useTheme();
@@ -24,11 +25,13 @@ function AppInner() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <RootNavigator />
-      <Loader visible={isLoading} />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+        <RootNavigator />
+        <Loader visible={isLoading} />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 

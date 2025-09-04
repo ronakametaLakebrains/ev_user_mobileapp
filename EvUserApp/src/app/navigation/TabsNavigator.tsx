@@ -5,8 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../../theme';
 import { HomeScreen } from '../../screens/HomeScreen';
-import { QRScannerTabScreen } from '../../screens/QRScannerTabScreen';
-import { ProfileScreen } from '../../screens/ProfileScreen';
+import { QRScannerTabScreen } from '../../features/qr/screens/QRScannerTabScreen';
+import { ProfileScreen } from '../../features/auth/screens/ProfileScreen';
 
 export type TabsParamList = {
   Home: undefined;

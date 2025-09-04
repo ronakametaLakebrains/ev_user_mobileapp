@@ -1,19 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useTheme } from '../theme';
-import { Button } from '../components';
+import { useTheme } from '../../../theme';
+import { Button } from '../../../components';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
-import type { RootStackParamList } from '../app/navigation/RootNavigator';
-import { useSignupDriver } from '../services/api/apiSignup';
-import { useRequestOtp, useVerifyOtp } from '../services/api/apiLogin';
-import { setAuthToken } from '../services/api/api';
-import { queryClient } from '../services/query/client';
+import type { RootStackParamList } from '../../../app/navigation/RootNavigator';
+import { useSignupDriver } from '../services/apiSignup';
+import { useRequestOtp, useVerifyOtp } from '../services/apiLogin';
+import { setAuthToken } from '../../../services/api/api';
+import { queryClient } from '../../../services/query/client';
+import { useAuth } from '../../../services/auth/AuthContext';
 
 export function OtpScreen() {
   const { theme } = useTheme();
   const route = useRoute<RouteProp<RootStackParamList, 'Otp'>>();
   const navigation = useNavigation();
+  const { checkAuthStatus } = useAuth();
   const signupMutation = useSignupDriver();
   const verifyMutation = useVerifyOtp();
   const requestOtp = useRequestOtp();
@@ -52,9 +54,29 @@ export function OtpScreen() {
       // Stash minimal user info for downstream screens
       const name = (res?.name as string) ?? payload.name ?? '';
       queryClient.setQueryData(['currentUser'], { name, phone: payload.phone });
-      navigation.reset({ index: 0, routes: [{ name: 'Tabs' as never }] });
+      
+      // Update authentication status
+      await checkAuthStatus();
+      
+      // Ensure navigation to main app
+      setTimeout(() => {
+        navigation.reset({ index: 0, routes: [{ name: 'Tabs' as never }] });
+      }, 100);
     } catch (e: any) {
-      setError(e?.message || 'Something went wrong. Please try again.');
+      // Handle different types of errors with user-friendly messages
+      if (e?.response?.status === 400) {
+        setError('Invalid OTP. Please check and try again.');
+      } else if (e?.response?.status === 401) {
+        setError('OTP has expired. Please request a new one.');
+      } else if (e?.response?.status === 429) {
+        setError('Too many attempts. Please wait a moment and try again.');
+      } else if (e?.response?.status >= 500) {
+        setError('Server error. Please try again later.');
+      } else if (e?.message?.includes('Network Error') || e?.code === 'NETWORK_ERROR') {
+        setError('No internet connection. Please check your network and try again.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     }
   }
 
@@ -81,7 +103,18 @@ export function OtpScreen() {
       setResendIn(30);
       setError(undefined);
     } catch (e: any) {
-      setError(e?.message || 'Failed to resend OTP');
+      // Handle different types of errors with user-friendly messages
+      if (e?.response?.status === 404) {
+        setError('Phone number not found. Please go back and try again.');
+      } else if (e?.response?.status === 429) {
+        setError('Too many resend attempts. Please wait before trying again.');
+      } else if (e?.response?.status >= 500) {
+        setError('Server error. Please try again later.');
+      } else if (e?.message?.includes('Network Error') || e?.code === 'NETWORK_ERROR') {
+        setError('No internet connection. Please check your network and try again.');
+      } else {
+        setError('Failed to resend OTP. Please try again.');
+      }
     }
   }
 

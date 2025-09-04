@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useTheme } from '../theme';
-import { getChargers, Charger } from '../services/api/apiChargers';
-import { getAuthToken } from '../services/api/api';
-import { Card, Button, ScreenWrapper } from '../components';
-import type { RootStackParamList } from '../app/navigation/RootNavigator';
+import { useTheme } from '../../../theme';
+import { getChargers, Charger } from '../services/apiChargers';
+import { getAuthToken } from '../../../services/api/api';
+import { Card, Button, ScreenWrapper } from '../../../components';
+import type { RootStackParamList } from '../../../app/navigation/RootNavigator';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -28,11 +28,8 @@ export function ChargersScreen() {
       }
       setError(null);
 
-      // Debug: Check if auth token is available
-      const token = await getAuthToken();
-      console.log('=== CHARGERS SCREEN DEBUG ===');
-      console.log('Auth token available:', !!token);
-      console.log('Token preview:', token ? `${token.substring(0, 20)}...` : 'No token');
+      // Check if auth token is available (for debugging if needed)
+      await getAuthToken();
 
       const data = await getChargers();
       
@@ -41,8 +38,8 @@ export function ChargersScreen() {
       } else {
         setError('Failed to fetch chargers');
       }
-    } catch (error: unknown) {
-      console.error('Fetch chargers error:', error);
+    } catch (err: unknown) {
+      console.error('Fetch chargers error:', err);
       setError('Failed to load chargers. Please try again.');
     } finally {
       setIsLoading(false);
@@ -84,18 +81,6 @@ export function ChargersScreen() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return `₹${amount.toLocaleString('en-IN')}`;
-  };
 
   const renderChargerCard = (charger: Charger) => (
     <Card key={charger.charger_id} style={styles.chargerCard} shadow="md">
@@ -141,27 +126,6 @@ export function ChargersScreen() {
             </Text>
             <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
               {charger._count.Connector}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.detailRow}>
-          <View style={styles.detailItem}>
-            <Ionicons name="trending-up" size={16} color={theme.colors.primary} />
-            <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>
-              Revenue
-            </Text>
-            <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
-              {formatCurrency(charger.total_revenue)}
-            </Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Ionicons name="time" size={16} color={theme.colors.primary} />
-            <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>
-              Last Seen
-            </Text>
-            <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
-              {formatDate(charger.last_heartbeat)}
             </Text>
           </View>
         </View>
@@ -326,22 +290,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   chargerInfo: {
     flex: 1,
   },
   chargerName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   chargerModel: {
-    fontSize: 14,
+    fontSize: 13,
     marginBottom: 2,
   },
   stationName: {
-    fontSize: 12,
+    fontSize: 11,
   },
   statusContainer: {
     alignItems: 'flex-end',
@@ -360,12 +324,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   chargerDetails: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   detailItem: {
     flex: 1,

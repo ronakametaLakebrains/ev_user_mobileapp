@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../theme';
-import { Button, Input, Checkbox, Logo } from '../components';
+import { useTheme } from '../../../theme';
+import { Button, Input, Checkbox, Logo } from '../../../components';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../app/navigation/RootNavigator';
-import { useRequestOtp } from '../services/api/apiLogin';
+import type { RootStackParamList } from '../../../app/navigation/RootNavigator';
+import { useRequestOtp } from '../services/apiLogin';
 
 export function LoginScreen() {
   const { theme } = useTheme();
@@ -19,12 +19,22 @@ export function LoginScreen() {
 
   const isValid = useMemo(() => {
     const trimmed = phone.replace(/\s|-/g, '');
-    return /^\+?\d{10,15}$/.test(trimmed);
+    // Allow +91 followed by 10 digits, or just 10 digits
+    return /^(\+91)?[6-9]\d{9}$/.test(trimmed);
   }, [phone]);
 
   async function onContinue() {
     if (!isValid) {
-      setError('Enter a valid mobile number');
+      const trimmed = phone.replace(/\s|-/g, '');
+      if (trimmed.length < 10) {
+        setError('Please enter a 10-digit mobile number');
+      } else if (trimmed.length > 10 && !trimmed.startsWith('+91')) {
+        setError('Please enter correct mobile number (10 digits)');
+      } else if (!/^[6-9]/.test(trimmed.replace('+91', ''))) {
+        setError('Mobile number should start with 6, 7, 8, or 9');
+      } else {
+        setError('Please enter correct mobile number');
+      }
       return;
     }
     setError(undefined);
@@ -34,7 +44,20 @@ export function LoginScreen() {
         navigation.navigate('Otp', { phone: res.phone, flow: 'login' });
       }
     } catch (e: any) {
-      setError(e?.message || 'Failed to request OTP');
+      // Handle different types of errors with user-friendly messages
+      if (e?.response?.status === 404) {
+        setError('This phone number is not registered. Please sign up first.');
+      } else if (e?.response?.status === 400) {
+        setError('Invalid phone number. Please check and try again.');
+      } else if (e?.response?.status === 429) {
+        setError('Too many attempts. Please wait a moment and try again.');
+      } else if (e?.response?.status >= 500) {
+        setError('Server error. Please try again later.');
+      } else if (e?.message?.includes('Network Error') || e?.code === 'NETWORK_ERROR') {
+        setError('No internet connection. Please check your network and try again.');
+      } else {
+        setError('Unable to send OTP. Please try again.');
+      }
     }
   }
 
@@ -55,10 +78,10 @@ export function LoginScreen() {
           {/* Form Section */}
           <View style={styles.formSection}>
             <Text style={[styles.title, { color: theme.colors.textPrimary, fontSize: theme.typography.sizes.h1 }]}>
-              Welcome Back
+              Welcome to ChargeKar
             </Text>
             <Text style={[styles.subtitle, { color: theme.colors.textSecondary, marginTop: theme.spacing.sm }]}>
-              Sign in to continue to your account
+              Sign in to access EV charging stations
             </Text>
 
             <View style={{ height: theme.spacing.xl }} />

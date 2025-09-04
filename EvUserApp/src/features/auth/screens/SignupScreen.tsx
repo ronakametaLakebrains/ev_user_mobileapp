@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
-import { useTheme } from '../theme';
-import { Button, Input, Checkbox } from '../components';
+import { useTheme } from '../../../theme';
+import { Button, Input, Checkbox } from '../../../components';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../app/navigation/RootNavigator';
+import type { RootStackParamList } from '../../../app/navigation/RootNavigator';
 
 export function SignupScreen() {
   const { theme } = useTheme();
@@ -13,7 +13,11 @@ export function SignupScreen() {
   const [phone, setPhone] = useState('');
   const [agreed, setAgreed] = useState(false);
 
-  const isValidPhone = useMemo(() => /^\+?\d{10,15}$/.test(phone.replace(/\s|-/g, '')), [phone]);
+  const isValidPhone = useMemo(() => {
+    const trimmed = phone.replace(/\s|-/g, '');
+    // Allow +91 followed by 10 digits, or just 10 digits
+    return /^(\+91)?[6-9]\d{9}$/.test(trimmed);
+  }, [phone]);
   const isValid = name.trim().length >= 2 && isValidPhone && agreed;
 
   function onSignup() {

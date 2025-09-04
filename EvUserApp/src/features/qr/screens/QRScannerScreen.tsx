@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../theme';
-import { openUpiUri } from '../services/payments/upi';
+import { useTheme } from '../../../theme';
+import { openUpiUri } from '../../payments/services/upi';
 import RNQRGenerator from 'rn-qr-generator';
 
 export function QRScannerScreen() {
@@ -79,9 +79,20 @@ export function QRScannerScreen() {
                 try {
                   await openUpiUri(upiUri);
                   
-                  // Navigate to charger ID input screen immediately after opening UPI app
-                  navigation.goBack();
-                  navigation.navigate('ChargerIdInput' as never);
+                  // Show confirmation that UPI app was opened
+                  Alert.alert(
+                    'UPI App Opened',
+                    'Please complete the payment in your UPI app. After payment, return to this app and enter the charger ID.',
+                    [
+                      {
+                        text: 'Continue',
+                        onPress: () => {
+                          navigation.goBack();
+                          navigation.navigate('ChargerIdInput' as never);
+                        }
+                      }
+                    ]
+                  );
                   
                 } catch (error) {
                   Alert.alert('Error', 'Failed to open UPI app. Please try again.');

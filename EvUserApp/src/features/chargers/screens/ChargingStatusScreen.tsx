@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../theme';
+import { useTheme } from '../../../theme';
 
 export function ChargingStatusScreen() {
   const { theme } = useTheme();

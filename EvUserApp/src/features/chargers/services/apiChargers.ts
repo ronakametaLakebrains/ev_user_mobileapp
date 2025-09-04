@@ -1,4 +1,4 @@
-import { get } from './api';
+import { get } from '../../../services/api/api';
 
 export interface Charger {
   charger_id: number;

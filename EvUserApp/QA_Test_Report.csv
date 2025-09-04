@@ -1,0 +1,27 @@
+Test Category,Test Case ID,Test Case Description,Status,Priority,Issues Found,Resolution,Notes
+Authentication,AUTH-001,Login with valid phone number,PASS,HIGH,None,None,Phone validation working correctly
+Authentication,AUTH-002,Login with invalid phone number,PASS,HIGH,None,None,Proper error messages displayed
+Authentication,AUTH-003,OTP verification success,PASS,HIGH,Users could get stuck on OTP screen,Fixed with explicit navigation,Smooth transition to main app
+Authentication,AUTH-004,OTP verification failure,PASS,HIGH,None,None,User-friendly error messages
+Authentication,AUTH-005,Signup flow completion,PASS,HIGH,None,None,New user registration working
+QR Scanning,QR-001,Take photo of QR code,PASS,HIGH,None,None,Camera integration working
+QR Scanning,QR-002,Select QR from gallery,PASS,HIGH,None,None,Gallery access working
+QR Scanning,QR-003,Process valid UPI QR code,PASS,HIGH,None,None,QR detection and UPI parsing working
+QR Scanning,QR-004,Process invalid QR code,PASS,HIGH,None,None,Proper error handling for invalid codes
+QR Scanning,QR-005,UPI app opening,PASS,HIGH,None,None,External UPI app integration working
+QR Scanning,QR-006,Return from UPI app,PASS,HIGH,App immediately navigated without confirmation,Fixed with confirmation dialog,Clear instructions for payment completion
+Charging Flow,CHG-001,Enter valid charger ID,PASS,HIGH,None,None,Input validation working
+Charging Flow,CHG-002,Enter invalid charger ID,PASS,HIGH,None,None,Proper error handling for 404
+Charging Flow,CHG-003,Monitor charger API call,PASS,HIGH,None,None,API integration working
+Charging Flow,CHG-004,Navigate to charging status,PASS,MEDIUM,App skipped charging status screen,Fixed navigation sequence,Proper flow through all screens
+Charging Flow,CHG-005,View transaction details,PASS,HIGH,None,None,Transaction data display working
+Charger Discovery,DIS-001,Load chargers list,PASS,HIGH,Debug logs in production,Removed console.log statements,API call and data display working
+Charger Discovery,DIS-002,Display charger cards,PASS,HIGH,None,None,Card layout and information correct
+Charger Discovery,DIS-003,Pull to refresh,PASS,MEDIUM,None,None,Refresh functionality working
+Charger Discovery,DIS-004,Handle API errors,PASS,HIGH,None,None,Error states properly handled
+Transaction Management,TXN-001,View transaction history,PASS,HIGH,None,None,List display and navigation working
+Transaction Management,TXN-002,View transaction details,PASS,HIGH,None,None,Detailed information display working
+Transaction Management,TXN-003,Handle empty states,PASS,MEDIUM,None,None,Proper empty state handling
+Profile & Settings,PROF-001,View user profile,PASS,HIGH,None,None,Profile information display working
+Profile & Settings,PROF-002,Logout functionality,PASS,HIGH,None,None,Token clearing and navigation working
+

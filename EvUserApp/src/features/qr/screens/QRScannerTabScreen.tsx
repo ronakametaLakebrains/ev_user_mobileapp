@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../theme';
-import { openUpiUri } from '../services/payments/upi';
+import { useTheme } from '../../../theme';
+import { openUpiUri } from '../../payments/services/upi';
 import RNQRGenerator from 'rn-qr-generator';
 
 export function QRScannerTabScreen() {
@@ -171,43 +171,38 @@ export function QRScannerTabScreen() {
           Scan QR Code
         </Text>
         <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-          Scan the QR code on the charger to start charging
+          First plug in your EV, then scan the QR code to start charging
         </Text>
         
-                 <View style={styles.scanButtonContainer}>
-           <TouchableOpacity
-             style={styles.scanButton}
-             onPress={handleScanQR}
-             activeOpacity={0.8}
-             disabled={isProcessing}
-           >
-             <View style={styles.scanButtonGlow} />
-             <View style={styles.scanButtonInner}>
-               {isProcessing ? (
-                 <>
-                   <ActivityIndicator size="large" color="#1a1a1a" />
-                   <Text style={styles.scanText}>PROCESSING...</Text>
-                 </>
-               ) : (
-                 <>
-                   <Text style={styles.scanIcon}>📱</Text>
-                   <Text style={styles.scanText}>SCAN QR</Text>
-                 </>
-               )}
-             </View>
-           </TouchableOpacity>
-         </View>
+        <View style={styles.scanButtonContainer}>
+          <TouchableOpacity
+            style={[styles.scanButton, { backgroundColor: theme.colors.primary }]}
+            onPress={handleScanQR}
+            activeOpacity={0.8}
+            disabled={isProcessing}
+          >
+            {isProcessing ? (
+              <>
+                <ActivityIndicator size="large" color="white" />
+                <Text style={styles.scanText}>Processing...</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.scanIcon}>📷</Text>
+                <Text style={styles.scanText}>Scan QR Code</Text>
+                <Text style={styles.scanSubtext}>Take a photo to start</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.infoContainer}>
-          <Text style={[styles.infoTitle, { color: theme.colors.textPrimary }]}>
-            How to use:
-          </Text>
           <View style={styles.stepContainer}>
             <View style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
               <Text style={styles.stepNumberText}>1</Text>
             </View>
             <Text style={[styles.stepText, { color: theme.colors.textSecondary }]}>
-              Find the QR code on the charger
+              Plug your EV into the charger and connect the charging cable
             </Text>
           </View>
           <View style={styles.stepContainer}>
@@ -215,7 +210,7 @@ export function QRScannerTabScreen() {
               <Text style={styles.stepNumberText}>2</Text>
             </View>
             <Text style={[styles.stepText, { color: theme.colors.textSecondary }]}>
-              Tap the scan button above
+              Find the QR code on the charger
             </Text>
           </View>
           <View style={styles.stepContainer}>
@@ -223,7 +218,7 @@ export function QRScannerTabScreen() {
               <Text style={styles.stepNumberText}>3</Text>
             </View>
             <Text style={[styles.stepText, { color: theme.colors.textSecondary }]}>
-              Point your camera at the QR code
+              Tap "Scan QR Code" button above
             </Text>
           </View>
           <View style={styles.stepContainer}>
@@ -231,7 +226,15 @@ export function QRScannerTabScreen() {
               <Text style={styles.stepNumberText}>4</Text>
             </View>
             <Text style={[styles.stepText, { color: theme.colors.textSecondary }]}>
-              Complete payment and start charging
+              Take a photo of the QR code
+            </Text>
+          </View>
+          <View style={styles.stepContainer}>
+            <View style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
+              <Text style={styles.stepNumberText}>5</Text>
+            </View>
+            <Text style={[styles.stepText, { color: theme.colors.textSecondary }]}>
+              Complete UPI payment and enter charger ID
             </Text>
           </View>
         </View>
@@ -267,7 +270,7 @@ export function QRScannerTabScreen() {
                 </View>
                 <View style={styles.optionContent}>
                   <Text style={[styles.optionText, { color: theme.colors.textPrimary }]}>Take Photo</Text>
-                  <Text style={[styles.optionDescription, { color: theme.colors.textSecondary }]}>Use camera to scan QR code</Text>
+                  <Text style={[styles.optionDescription, { color: theme.colors.textSecondary }]}>Take photo of QR code</Text>
                 </View>
               </TouchableOpacity>
 
@@ -327,55 +330,37 @@ const styles = StyleSheet.create({
   },
   scanButtonContainer: {
     marginBottom: 40,
+    alignItems: 'center',
   },
   scanButton: {
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 8,
-  },
-  scanButtonGlow: {
-    position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: 'transparent',
-    borderWidth: 3,
-    borderColor: '#00ff00',
-    shadowColor: '#00ff00',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.8,
-    shadowRadius: 15,
-    elevation: 10,
-  },
-  scanButtonInner: {
-    alignItems: 'center',
-    zIndex: 1,
+    elevation: 6,
   },
   scanIcon: {
-    fontSize: 48,
+    fontSize: 32,
     marginBottom: 8,
-    color: '#1a1a1a',
   },
   scanText: {
-    color: '#1a1a1a',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  scanSubtext: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    fontWeight: '500',
   },
   infoContainer: {
     width: '100%',

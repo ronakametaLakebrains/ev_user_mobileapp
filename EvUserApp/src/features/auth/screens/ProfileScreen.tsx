@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from '../theme';
+import { useTheme } from '../../../theme';
 import { useQueryClient } from '@tanstack/react-query';
-import { Button, ScreenWrapper } from '../components';
-import { logoutUser } from '../services/auth/logout';
+import { Button, ScreenWrapper } from '../../../components';
+import { logoutUser } from '../../../services/auth/logout';
+import { useAuth } from '../../../services/auth/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -13,6 +14,7 @@ export function ProfileScreen() {
   const { theme } = useTheme();
   const queryClient = useQueryClient();
   const navigation = useNavigation();
+  const { logout } = useAuth();
   const user = queryClient.getQueryData<{ name?: string; phone?: string }>(['currentUser']) || {};
   const displayName = user.name && user.name.trim().length > 0 ? user.name : 'User';
   const displayPhone = user.phone && user.phone.trim().length > 0 ? user.phone : '';
@@ -66,28 +68,6 @@ export function ProfileScreen() {
           </View>
         </View>
 
-        {/* Quick Actions */}
-        <View style={[styles.panel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
-            Quick Actions
-          </Text>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity 
-              style={[styles.actionButton, { backgroundColor: theme.colors.primary }]}
-              onPress={() => {}}
-            >
-              <Icon name="cog" size={20} color="#ffffff" />
-              <Text style={styles.actionButtonText}>Settings</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
-              onPress={() => {}}
-            >
-              <Icon name="help-circle" size={20} color="#ffffff" />
-              <Text style={styles.actionButtonText}>Help & Support</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
       </ScrollView>
 
       <View style={[styles.footer, { borderTopColor: theme.colors.border, paddingHorizontal: theme.spacing.xl, paddingVertical: theme.spacing.md }]}>
@@ -97,7 +77,8 @@ export function ProfileScreen() {
           fullWidth
           onPress={async () => {
             await logoutUser();
-            navigation.reset({ index: 0, routes: [{ name: 'Login' as never }] });
+            await logout();
+            // Navigation will be handled automatically by the auth context
           }}
         />
       </View>
@@ -176,32 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 16,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    gap: 8,
-  },
-  actionButtonText: {
-    color: '#ffffff', // Keep white for contrast against colored backgrounds
-    fontSize: 14,
-    fontWeight: '600',
-  },
 });
 
-export default ProfileScreen;
 
 

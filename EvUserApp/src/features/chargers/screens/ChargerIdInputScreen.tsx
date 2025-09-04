@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useTheme } from '../theme';
-import { Input } from '../components/ui/Input';
-import { monitorCharger } from '../services/api/apiMonitor';
-import { getCurrentUserPhone } from '../utils/userUtils';
-import type { RootStackParamList } from '../app/navigation/RootNavigator';
+import { useTheme } from '../../../theme';
+import { Input } from '../../../components/ui/Input';
+import { monitorCharger } from '../services/apiMonitor';
+import { getCurrentUserPhone } from '../../../utils/userUtils';
+import type { RootStackParamList } from '../../../app/navigation/RootNavigator';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -40,8 +40,8 @@ export function ChargerIdInputScreen() {
       });
       
       if (data.success) {
-        // Navigate to transaction details screen with the data
-        navigation.navigate('TransactionDetails', { transactionData: data });
+        // Navigate to charging status screen first
+        navigation.navigate('ChargingStatus', { transactionData: data });
       } else {
         Alert.alert('Error', 'Failed to fetch transaction data. Please try again.');
       }
